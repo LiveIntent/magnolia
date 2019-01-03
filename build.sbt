@@ -12,10 +12,10 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     scalaVersion := crossScalaVersions.value.head,
     libraryDependencies ++= Seq(
       "com.propensive" %% "mercator" % "0.1.1"
-    )
-  )
+    ),
+    credentials += Credentials(Path.userHome / ".sbt" / "build.idtargeting.com.credentials")  )
   .jvmSettings(
-    crossScalaVersions := "2.12.4" :: "2.13.0-M4" :: "2.11.12" :: Nil
+    crossScalaVersions := "2.11.12" :: Nil
   )
   .jsSettings(
     crossScalaVersions := "2.12.4" :: "2.13.0-M4" :: "2.11.12" :: Nil
@@ -84,7 +84,7 @@ lazy val benchmarks = project
 lazy val buildSettings = Seq(
   organization := "com.propensive",
   name := "magnolia",
-  version := "0.10.0",
+  version := "0.10.0-li",
   scalacOptions ++= Seq(
     "-deprecation",
     "-feature",
@@ -122,11 +122,11 @@ lazy val publishSettings = Seq(
     false
   },
   publishTo := {
-    val nexus = "https://oss.sonatype.org/"
+    val nexus = "https://build.idtargeting.com/nexus/content/repositories/"
     if (isSnapshot.value)
-      Some("snapshots" at nexus + "content/repositories/snapshots")
+      Some("snapshots" at nexus + "snapshots/") 
     else
-      Some("releases" at nexus + "service/local/staging/deploy/maven2")
+      Some("releases"  at nexus + "releases/")
   },
   pomExtra := (
     <developers>
