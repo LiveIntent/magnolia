@@ -17,6 +17,7 @@ try {
 			    stage('Build') {
 			        ansiColor('xterm') {
 						sh """
+							echo SBT_CREDENTIALS
 							sbt coreJVM/test
 			            """
 			        }
