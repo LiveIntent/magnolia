@@ -17,7 +17,7 @@ try {
 			    stage('Build') {
 			        ansiColor('xterm') {
 						sh """
-							cat /tmp/secrets/build.idtargeting.com.credentials/
+							ls /tmp/secrets/build.idtargeting.com.credentials/
 						
 							sbt +compile +tests/run
 			            """
