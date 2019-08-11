@@ -15,10 +15,10 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     ),
     credentials += Credentials(Path.userHome / ".sbt" / "build.idtargeting.com.credentials")  )
   .jvmSettings(
-    crossScalaVersions := "2.12.4" :: "2.11.12" :: Nil
+    crossScalaVersions := "2.12.9" :: "2.11.12" :: Nil
   )
   .jsSettings(
-    crossScalaVersions := "2.12.4" :: "2.13.0-M4" :: "2.11.12" :: Nil
+    crossScalaVersions := "2.12.9" :: "2.11.12" :: Nil
   )
   .nativeSettings(
     crossScalaVersions := "2.11.12" :: Nil
