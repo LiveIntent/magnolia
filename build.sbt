@@ -1,8 +1,16 @@
 // shadow sbt-scalajs' crossProject and CrossType until Scala.js 1.0.0 is released
 import com.typesafe.sbt.pgp.PgpKeys.publishSigned
 
-lazy val core = crossProject(JVMPlatform)
-  .in(file("core"))
+lazy val scala211 = "2.11.12"
+lazy val scala212 = "2.12.11"
+lazy val supportedScalaVersions = List(scala211,scala212)
+
+ThisBuild / scalaVersion := scala211
+
+crossScalaVersions := supportedScalaVersions
+releaseCrossBuild := true
+
+lazy val core = (project in file("core"))
   .settings(buildSettings: _*)
   .settings(publishSettings: _*)
   .settings(scalaMacroDependencies: _*)
@@ -15,74 +23,76 @@ lazy val core = crossProject(JVMPlatform)
     credentials in ThisBuild ++= Seq(
       Credentials(Path.userHome / ".sbt" / "build.idtargeting.com.credentials"),
       Credentials(Path.userHome / ".sbt" / "liveintent.jfrog.io.credentials")
-    )
+    ),
+    crossScalaVersions := supportedScalaVersions
   )
-  .jvmSettings(
-    crossScalaVersions := "2.12.9" :: "2.11.12" :: Nil
-  )
-  .jsSettings(
-    crossScalaVersions := "2.12.9" :: "2.11.12" :: Nil
-  )
-  .nativeSettings(
-    crossScalaVersions := "2.11.12" :: Nil
-  )
+//  .jvmSettings(
+//    crossScalaVersions := "2.12.9" :: "2.11.12" :: Nil
+//  )
+//  .jsSettings(
+//    crossScalaVersions := "2.12.9" :: "2.11.12" :: Nil
+//  )
+//  .nativeSettings(
+//    crossScalaVersions := "2.11.12" :: Nil
+//  )
 
-lazy val coreJVM = core.jvm
-lazy val coreJS = core.js
-lazy val coreNative = core.native
+//lazy val coreJVM = core.jvm
+//lazy val coreJS = core.js
+//lazy val coreNative = core.native
 
-lazy val examples = crossProject(JVMPlatform, JSPlatform, NativePlatform)
-  .in(file("examples"))
-  .settings(buildSettings: _*)
-  .settings(publishSettings: _*)
-  .settings(moduleName := "magnolia-examples")
-  .jvmSettings(
-    crossScalaVersions := (crossScalaVersions in coreJVM).value,
-    scalaVersion := (scalaVersion in coreJVM).value
-  )
-  .jsSettings(
-    crossScalaVersions := (crossScalaVersions in coreJS).value,
-    scalaVersion := (scalaVersion in coreJS).value
-  )
-  .nativeSettings(
-    crossScalaVersions := (crossScalaVersions in coreNative).value,
-    scalaVersion := (scalaVersion in coreNative).value
-  )
-  .dependsOn(core)
+//lazy val examples = crossProject(JVMPlatform)
+//  .in(file("examples"))
+//  .settings(buildSettings: _*)
+//  .settings(publishSettings: _*)
+//  .settings(moduleName := "magnolia-examples")
+//  .jvmSettings(
+//    crossScalaVersions := (crossScalaVersions in coreJVM).value,
+//    scalaVersion := (scalaVersion in coreJVM).value
+//  )
+//  .jsSettings(
+//    crossScalaVersions := (crossScalaVersions in coreJS).value,
+//    scalaVersion := (scalaVersion in coreJS).value
+//  )
+//  .nativeSettings(
+//    crossScalaVersions := (crossScalaVersions in coreNative).value,
+//    scalaVersion := (scalaVersion in coreNative).value
+//  )
+//  .dependsOn(core)
+//
+//lazy val examplesJVM = examples.jvm
+//lazy val examplesJS = examples.js
+//lazy val examplesNative = examples.native
 
-lazy val examplesJVM = examples.jvm
-lazy val examplesJS = examples.js
-lazy val examplesNative = examples.native
-
-lazy val tests = project
-  .in(file("tests"))
-  .settings(buildSettings: _*)
-  .settings(unmanagedSettings)
-  .settings(moduleName := "magnolia-tests")
-  .settings(
-    addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full),
-    initialCommands in console := """import magnolia.tests._; import magnolia.examples._;""",
-    libraryDependencies ++= Seq(
+//lazy val tests = project
+//  .in(file("tests"))
+//  .settings(buildSettings: _*)
+//  .settings(unmanagedSettings)
+//  .settings(moduleName := "magnolia-tests")
+//  .settings(
+//    addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full),
+//    initialCommands in console := """import magnolia.tests._; import magnolia.examples._;""",
+//    libraryDependencies ++= Seq(
       // These two to allow compilation under Java 9...
       // Specifically to import XML stuff that got modularised
-      "javax.xml.bind" % "jaxb-api" % "2.3.0" % "compile",
-      "com.sun.xml.bind" % "jaxb-impl" % "2.3.0" % "compile"
-    )
-  )
-  .dependsOn(examplesJVM)
+//      "javax.xml.bind" % "jaxb-api" % "2.3.0" % "compile",
+//      "com.sun.xml.bind" % "jaxb-impl" % "2.3.0" % "compile"
+//    )
+//  )
+//  .dependsOn(examplesJVM)
 
 lazy val root = (project in file("."))
-  .aggregate(coreJVM, coreJS, coreNative, examplesJVM, examplesJS, examplesNative, tests)
+//  .aggregate(coreJVM, coreJS, coreNative, examplesJVM, examplesJS, examplesNative, tests)
+  .aggregate(core)
   .settings(
     publish := {},
     publishLocal := {}
   )
 
-lazy val benchmarks = project
-  .in(file("benchmarks"))
-  .settings(buildSettings: _*)
-  .settings(moduleName := "magnolia-benchmarks")
-  .dependsOn(examplesJVM)
+//lazy val benchmarks = project
+//  .in(file("benchmarks"))
+//  .settings(buildSettings: _*)
+//  .settings(moduleName := "magnolia-benchmarks")
+//  .dependsOn(examplesJVM)
 
 lazy val buildSettings = Seq(
   organization := "com.propensive",

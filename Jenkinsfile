@@ -17,7 +17,7 @@ try {
 			    stage('Build') {
 			        ansiColor('xterm') {
 						sh """
-							sbt '+ coreJVM/publish'
+							sbt '+ core/publish'
 			            """
 			        }
 				}
