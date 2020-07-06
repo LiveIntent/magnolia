@@ -1,5 +1,4 @@
 // shadow sbt-scalajs' crossProject and CrossType until Scala.js 1.0.0 is released
-import sbtcrossproject.{crossProject, CrossType}
 import com.typesafe.sbt.pgp.PgpKeys.publishSigned
 
 lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
@@ -13,7 +12,11 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     libraryDependencies ++= Seq(
       "com.propensive" %% "mercator" % "0.1.1"
     ),
-    credentials += Credentials(Path.userHome / ".sbt" / "build.idtargeting.com.credentials")  )
+    credentials in ThisBuild ++= Seq(
+      Credentials(Path.userHome / ".sbt" / "build.idtargeting.com.credentials"),
+      Credentials(Path.userHome / ".sbt" / "liveintent.jfrog.io.credentials")
+    )
+  )
   .jvmSettings(
     crossScalaVersions := "2.12.9" :: "2.11.12" :: Nil
   )
@@ -122,11 +125,11 @@ lazy val publishSettings = Seq(
     false
   },
   publishTo := {
-    val nexus = "https://build.idtargeting.com/nexus/content/repositories/"
+    val jfrog = "https://liveintent.jfrog.io/artifactory/berlin"
     if (isSnapshot.value)
-      Some("snapshots" at nexus + "snapshots/") 
+      Some("snapshots" at jfrog + ";build.timestamp=" + new java.util.Date().getTime)
     else
-      Some("releases"  at nexus + "releases/")
+      Some("releases"  at jfrog)
   },
   pomExtra := (
     <developers>
