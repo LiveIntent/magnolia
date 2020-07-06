@@ -1,7 +1,7 @@
 // shadow sbt-scalajs' crossProject and CrossType until Scala.js 1.0.0 is released
 import com.typesafe.sbt.pgp.PgpKeys.publishSigned
 
-lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
+lazy val core = crossProject(JVMPlatform)
   .in(file("core"))
   .settings(buildSettings: _*)
   .settings(publishSettings: _*)
