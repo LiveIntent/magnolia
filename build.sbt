@@ -1,9 +1,17 @@
-// shadow sbt-scalajs' crossProject and CrossType until Scala.js 1.0.0 is released
-import sbtcrossproject.{crossProject, CrossType}
-import com.typesafe.sbt.pgp.PgpKeys.publishSigned
+import sbt.Keys.crossScalaVersions
 
-lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
-  .in(file("core"))
+lazy val scala211 = "2.11.12"
+lazy val scala212 = "2.12.11"
+lazy val supportedScalaVersions = List(scala211,scala212)
+
+ThisBuild / scalaVersion := scala211
+
+crossScalaVersions := supportedScalaVersions
+releaseCrossBuild := true
+
+ThisBuild / turbo := true
+
+lazy val core = (project in file("core/shared"))
   .settings(buildSettings: _*)
   .settings(publishSettings: _*)
   .settings(scalaMacroDependencies: _*)
@@ -13,43 +21,24 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     libraryDependencies ++= Seq(
       "com.propensive" %% "mercator" % "0.1.1"
     ),
-    credentials += Credentials(Path.userHome / ".sbt" / "build.idtargeting.com.credentials")  )
-  .jvmSettings(
-    crossScalaVersions := "2.12.9" :: "2.11.12" :: Nil
-  )
-  .jsSettings(
-    crossScalaVersions := "2.12.9" :: "2.11.12" :: Nil
-  )
-  .nativeSettings(
-    crossScalaVersions := "2.11.12" :: Nil
+    credentials += Credentials(Path.userHome / ".sbt" / "liveintent.jfrog.io.credentials") )
+  .settings(
+    crossScalaVersions := supportedScalaVersions,
   )
 
-lazy val coreJVM = core.jvm
-lazy val coreJS = core.js
-lazy val coreNative = core.native
+lazy val coreJVM = core
 
-lazy val examples = crossProject(JVMPlatform, JSPlatform, NativePlatform)
-  .in(file("examples"))
+lazy val examples = (project in file("examples/shared"))
   .settings(buildSettings: _*)
   .settings(publishSettings: _*)
   .settings(moduleName := "magnolia-examples")
-  .jvmSettings(
+  .settings(
     crossScalaVersions := (crossScalaVersions in coreJVM).value,
     scalaVersion := (scalaVersion in coreJVM).value
   )
-  .jsSettings(
-    crossScalaVersions := (crossScalaVersions in coreJS).value,
-    scalaVersion := (scalaVersion in coreJS).value
-  )
-  .nativeSettings(
-    crossScalaVersions := (crossScalaVersions in coreNative).value,
-    scalaVersion := (scalaVersion in coreNative).value
-  )
   .dependsOn(core)
 
-lazy val examplesJVM = examples.jvm
-lazy val examplesJS = examples.js
-lazy val examplesNative = examples.native
+lazy val examplesJVM = examples
 
 lazy val tests = project
   .in(file("tests"))
@@ -69,7 +58,7 @@ lazy val tests = project
   .dependsOn(examplesJVM)
 
 lazy val root = (project in file("."))
-  .aggregate(coreJVM, coreJS, coreNative, examplesJVM, examplesJS, examplesNative, tests)
+  .aggregate(coreJVM, examplesJVM, tests)
   .settings(
     publish := {},
     publishLocal := {}
