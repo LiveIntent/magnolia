@@ -141,6 +141,8 @@ lazy val publishSettings = Seq(
     else
       Some("releases"  at jfrog)
   },
+  publishConfiguration := publishConfiguration.value.withOverwrite(true),
+  publishLocalConfiguration := publishLocalConfiguration.value.withOverwrite(true),
   pomExtra := (
     <developers>
       <developer>
