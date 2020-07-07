@@ -1,5 +1,5 @@
-// shadow sbt-scalajs' crossProject and CrossType until Scala.js 1.0.0 is released
 import com.typesafe.sbt.pgp.PgpKeys.publishSigned
+import sbt.Keys.crossScalaVersions
 
 lazy val scala211 = "2.11.12"
 lazy val scala212 = "2.12.11"
@@ -10,7 +10,9 @@ ThisBuild / scalaVersion := scala211
 crossScalaVersions := supportedScalaVersions
 releaseCrossBuild := true
 
-lazy val core = (project in file("core"))
+ThisBuild / turbo := true
+
+lazy val core = (project in file("core/shared"))
   .settings(buildSettings: _*)
   .settings(publishSettings: _*)
   .settings(scalaMacroDependencies: _*)
@@ -20,10 +22,8 @@ lazy val core = (project in file("core"))
     libraryDependencies ++= Seq(
       "com.propensive" %% "mercator" % "0.1.1"
     ),
-    credentials in ThisBuild ++= Seq(
-      Credentials(Path.userHome / ".sbt" / "build.idtargeting.com.credentials"),
-      Credentials(Path.userHome / ".sbt" / "liveintent.jfrog.io.credentials")
-    ),
+    credentials += Credentials(Path.userHome / ".sbt" / "liveintent.jfrog.io.credentials") )
+  .settings(
     crossScalaVersions := supportedScalaVersions
   )
 //  .jvmSettings(
